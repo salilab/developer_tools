@@ -6,20 +6,20 @@ import re
 import os
 
 
-def check_header_file(fh_name, errors):
+def check_header_file(fh_name, project_name, errors):
     """Check a single C++ header file"""
-    _check_file(fh_name, True, errors)
+    _check_file(fh_name, project_name, True, errors)
 
 
-def check_cpp_file(fh_name, errors):
+def check_cpp_file(fh_name, project_name, errors):
     """Check a single C++ source file"""
-    _check_file(fh_name, False, errors)
+    _check_file(fh_name, project_name, False, errors)
 
 
-def _check_file(fh_name, header, errors):
+def _check_file(fh_name, project_name, header, errors):
     fh, filename = fh_name
     s = tokenize_file(fh)
-    check_tokens(s, filename, header, errors)
+    check_tokens(s, filename, project_name, header, errors)
 
 
 def tokenize_file(fh):
@@ -32,7 +32,7 @@ def tokenize_file(fh):
     return scan
 
 
-def check_tokens(scan, filename, header, errors):
+def check_tokens(scan, filename, project_name, header, errors):
     if filename.find("test_") == -1:
         # we don't do it for python tests
         check_comment_header(scan, filename, errors)
@@ -42,7 +42,7 @@ def check_tokens(scan, filename, header, errors):
            and scan[2][1] == '\n#':
             scan[2] = (token.Comment.Preproc, '#')
             scan.insert(2, (token.Comment.Text, '\n'))
-        check_header_start_end(scan, filename, errors)
+        check_header_start_end(scan, filename, project_name, errors)
 
 
 def check_comment_header(scan, filename, errors):
@@ -63,10 +63,10 @@ def have_header_guard(scan):
         and scan[-2][0] in (token.Comment, token.Comment.Multiline)
 
 
-def get_header_guard(filename):
+def get_header_guard(filename, project_name):
     """Get prefix and suffix for header guard"""
-    guard_prefix = "IMP"
-    module = 'IMP'
+    guard_prefix = project_name
+    module = project_name
     m = re.search('modules\/(\w+)\/', filename)
     if m:
         module = m.group(1)
@@ -85,8 +85,8 @@ def get_header_guard(filename):
     return guard_prefix, guard_suffix
 
 
-def check_header_start_end(scan, filename, errors):
-    guard_prefix, guard_suffix = get_header_guard(filename)
+def check_header_start_end(scan, filename, project_name, errors):
+    guard_prefix, guard_suffix = get_header_guard(filename, project_name)
     header_guard = guard_prefix + '_' + guard_suffix
     bad = False
     if not len(scan) >= 11:

@@ -13,6 +13,16 @@ except ImportError:
     print "Pygments (http://pygments.org/) library: please install."
     print
 
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("-n", "--name", dest="project_name",
+                  default="IMP",
+                  help="The name of the project.")
+(options, args) = parser.parse_args()
+
+project_name = options.project_name
+
 
 def _check_do_not_commit(line, filename, num, errors):
     marker = 'DO NOT' + ' COMMIT'
@@ -37,7 +47,7 @@ def check_c_file(filename, errors):
         module = os.path.split(os.path.split(os.path.split(filename)[0])[0])[1]
     for (num, line) in enumerate(fh):
         line = line.rstrip('\r\n')
-        if line.find("\\file %s/%s" % (module, name)) != -1 or line.find("\\file IMP/%s/%s" % (module, name)) != -1:
+        if line.find("\\file %s/%s" % (module, name)) != -1 or line.find("\\file %s/%s/%s" % (project_name, module, name)) != -1:
             file_line = True
         # No way to split URLs, so let them exceed 80 characters:
         if line.startswith(">>>>>>> "):
@@ -46,7 +56,7 @@ def check_c_file(filename, errors):
                 (filename, num + 1))
         _check_do_not_commit(line, filename, num, errors)
         if not filename.endswith(".cpp") and line.startswith("#define ") \
-           and not line.startswith("#define IMP") \
+           and not line.startswith("#define %s" % project_name) \
            and not line.startswith("#define EIGEN_YES_I_KNOW_SPARSE_"
                                    "MODULE_IS_NOT_STABLE_YET"):
             found = False
@@ -55,8 +65,8 @@ def check_c_file(filename, errors):
                 if onum > num and oline.startswith(fline):
                     found = True
             if not found:
-                errors.append('%s:%d: error: Preprocessor symbols must start with IMP'
-                              % (filename, num + 1))
+                errors.append('%s:%d: error: Preprocessor symbols must start with %s'
+                              % (filename, num + 1, project_name))
         blank = (len(line) == 0)
         if line.startswith('#include "'):
             configh = True
@@ -133,9 +143,12 @@ def check_modified_file(filename, errors):
         check_c_file(filename, errors)
         # don't check header guard in template headers
         if cpp_format and filename.endswith('.h') and filename.find("templates") == -1:
-            cpp_format.check_header_file(get_file(filename), errors)
+            cpp_format.check_header_file(
+                get_file(filename),
+                project_name,
+                errors)
         elif cpp_format and filename.endswith('.cpp'):
-            cpp_format.check_cpp_file(get_file(filename), errors)
+            cpp_format.check_cpp_file(get_file(filename), project_name, errors)
     elif filename.endswith('.py'):
         check_python_file(filename, errors)
 
@@ -163,11 +176,11 @@ def get_all_files():
 
 def main():
     errors = []
-    if len(sys.argv) == 1:
+    if len(args) == 0:
         modfiles = get_all_files()
         print "usage:", sys.argv[0], "file_patterns"
     else:
-        modfiles = sys.argv[1:]
+        modfiles = args
     for pattern in modfiles:
         expanded = glob.glob(pattern)
         # rint pattern, expanded
