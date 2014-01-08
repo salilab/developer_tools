@@ -11,13 +11,12 @@ import python_tools
 
 def _get_files(ds, suffix):
     ret = []
-    for (dirpath, dirnames, filenames) in walk(directory):
+    for (dirpath, dirnames, filenames) in os.walk(ds):
+        reldirpath = dirpath[len(ds) + 1:]
         for f in filenames:
             if f.endswith(suffix):
-                ret.append(
-                    os.path.join(dirpath,
-                                 f)[len(ds) + 1:].replace("\\",
-                                                          "/"))
+                joined = os.path.join(reldirpath, f)
+                ret.append(joined.replace("\\", "/"))
     ret.sort()
     return ret
 
@@ -31,11 +30,17 @@ def make_files(d):
            "set(cppfiles \"%s\")" % ";".join(cppfiles)]
     if len(jsonfiles) > 0:
         out.append("set(jsonfiles \"%s\")" % ";".join(jsonfiles))
-    _rewrite(output, out)
+    python_tools.rewrite(output, "\n".join(out))
 
-directories = sys.argv[1:] if len(sys.argv) > 1 else ['.']
-for directory in directories:
-    for (dirpath, dirnames, filenames) in walk(directory):
-        for d in dirnames:
-            if d in ["bin", "src", "test", "examples", "benchmark"]:
-                make_files(os.path.join(dirpath, d))
+
+def search_start(d):
+    for cd in [o for o in os.listdir(d) if os.path.isdir(os.path.join(d, o))]:
+        if cd.startswith("."):
+            continue
+        cp = os.path.join(d, cd)
+        if cd in ["bin", "src", "test", "examples", "benchmark"]:
+            make_files(cp)
+        else:
+            search_start(cp)
+
+search_start(".")
