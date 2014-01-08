@@ -4,11 +4,16 @@ from optparse import OptionParser
 import subprocess
 import fnmatch
 import os
+import sys
 import multiprocessing
 from Queue import Queue
 from threading import Thread
 import autopep8
 import distutils.spawn
+
+sys.path.append(os.path.split(sys.argv[0]))
+import python_tools
+
 
 parser = OptionParser()
 parser.add_option("-c", "--clang-format", dest="clang_format",
@@ -88,15 +93,6 @@ class ThreadPool:
         return error
 
 
-def _rewrite(filename, contents):
-    old = open(filename, "r").read()
-    #contents = open(tempfile, "r").read()
-    if old != contents:
-        print "patching " + filename
-        open(filename, "w").write(contents)
-        # os.unlink(tempfile)
-
-
 def _do_get_files(glb, cur):
     matches = []
     dirs = []
@@ -142,7 +138,7 @@ def clean_cpp(path):
     else:
         contents = open(path, "r").read()
     contents = contents.replace("% template", "%template")
-    _rewrite(path, contents)
+    pythontools.rewrite(path, contents)
 
 
 def clean_py(path):
@@ -153,7 +149,7 @@ def clean_py(path):
         contents = open(path, "r").read()
     if contents.find("# \\example") != -1:
         contents = "#" + contents
-    _rewrite(path, contents)
+    pythontools.rewrite(path, contents)
 
 
 def main():
