@@ -38,7 +38,7 @@ else:
         print >> sys.stderr, "Script must be run from a git root directory"
         exit(1)
 
-    if not options.module and not os.path.exists(os.path.join("tools", "developer_tools")):
+    if not os.path.exists(os.path.join("tools", "developer_tools")):
         print >> sys.stderr, "Script expects to find tools/developer_tools"
         exit(1)
 
@@ -86,14 +86,20 @@ os.system(git_config + " branch.master.rebase true")
 subprojects = []
 cmd = subprocess.Popen(["git", "submodule", "foreach", "--quiet", "pwd"],
                        stdout=subprocess.PIPE)
-subprojects += cmd.stdout.read().split('\n')
+subprojects += [x for x in cmd.stdout.read().split('\n') if x is not ""]
 exclude = os.path.join(".git", "info", "exclude")
 if os.path.exists(exclude):
-    for x in open(exclude, "r").read().split("\n"):
-        if not x.startswith("#"):
-            subprojects.append(x)
+    subprojects += [
+        x for x in open(
+            exclude,
+            "r").read(
+        ).split(
+            "\n") if not x.startswith(
+            "#") and not x.isspace(
+        ) and x != ""]
 
 for s in subprojects:
     su = os.path.join(s, "setup_git.py")
     if os.path.exists(su):
+        print "Recursively setting up '%s', '%s'" % (s, su)
         os.system(su)
