@@ -7,15 +7,39 @@ import os
 import multiprocessing
 from Queue import Queue
 from threading import Thread
+import autopep8
+import distutils.spawn
 
 parser = OptionParser()
 parser.add_option("-c", "--clang-format", dest="clang_format",
-                  default="clang-format-3.4",
+                  default="auto",
                   help="The clang-format command.")
 parser.add_option("-a", "--autopep8", dest="autopep8",
-                  default="autopep8",
+                  default="auto",
                   help="The autopep8 command.")
+parser.add_option("-e", "--exclude", dest="exclude",
+                  default="eigen3:config_templates",
+                  help="Color separated list of dirnames to ignore.")
 (options, args) = parser.parse_args()
+
+# clang-format-3.4",
+# autopep8
+
+# search for executables
+if options.clang_format == "auto":
+    options.clang_format = None
+    for name in ["clang-format-3.4", "clang-format"]:
+        if distutils.spawn.find_executable(name):
+            options.clang_format = name
+            break
+if options.autopep8 == "auto":
+    options.autopep8 = None
+    for name in ["autopep8"]:
+        if distutils.spawn.find_executable(name):
+            options.autopep8 = name
+            break
+
+exclude = options.exclude.split(":")
 
 error = None
 
@@ -68,6 +92,7 @@ def _rewrite(filename, contents):
     old = open(filename, "r").read()
     #contents = open(tempfile, "r").read()
     if old != contents:
+        print "patching " + filename
         open(filename, "w").write(contents)
         # os.unlink(tempfile)
 
@@ -76,7 +101,7 @@ def _do_get_files(glb, cur):
     matches = []
     dirs = []
     for n in os.listdir(cur):
-        if n == "eigen3" or n == "config_templates":
+        if n in exclude:
             continue
         name = os.path.join(cur, n)
         if os.path.isdir(name):
@@ -112,20 +137,35 @@ def _run(cmd):
 
 
 def clean_cpp(path):
-    contents = _run([options.clang_format, "--style=Google", path])
+    if options.clang_format:
+        contents = _run([options.clang_format, "--style=Google", path])
+    else:
+        contents = open(path, "r").read()
     contents = contents.replace("% template", "%template")
     _rewrite(path, contents)
 
 
 def clean_py(path):
-    contents = _run([options.autopep8, "--aggressive", "--aggressive",
-                     "--ignore=E24,W602", path])
+    if options.autopep8:
+        contents = _run([options.autopep8, "--aggressive", "--aggressive",
+                         "--ignore=E24,W602", path])
+    else:
+        contents = open(path, "r").read()
     if contents.find("# \\example") != -1:
         contents = "#" + contents
     _rewrite(path, contents)
 
 
 def main():
+    if options.autopep8 is None:
+        print "autopep8 not found"
+    else:
+        print "autopep8 is `%s`" % options.autopep8
+    if options.clang_format is None:
+        print "clang-format not found"
+    else:
+        print "clang-format is `%s`" % options.clang_format
+
     tp = ThreadPool()
 
     for f in _get_files(".py"):
