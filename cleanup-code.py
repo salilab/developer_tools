@@ -138,7 +138,7 @@ def clean_cpp(path):
     else:
         contents = open(path, "r").read()
     contents = contents.replace("% template", "%template")
-    pythontools.rewrite(path, contents)
+    python_tools.rewrite(path, contents)
 
 
 def clean_py(path):
@@ -149,7 +149,7 @@ def clean_py(path):
         contents = open(path, "r").read()
     if contents.find("# \\example") != -1:
         contents = "#" + contents
-    pythontools.rewrite(path, contents)
+    python_tools.rewrite(path, contents)
 
 
 def main():
