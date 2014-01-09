@@ -31,6 +31,12 @@ def check_c_file(filename, errors):
     """Check each modified C file to make sure it adheres to the standards"""
     info = python_tools.get_project_info(filename)
     docname = info["name"].replace(".", "/")
+    filepath = os.path.split(filename)[0]
+    if filepath.find(docname) != -1:
+        docname = filepath[filepath.find(docname):]
+    elif filepath.find("include") != -1:
+        docname = docname + "/" + \
+            filepath[filepath.find("include") + len("include"):]
     cppprefix = info["name"].replace(".", "_")
     altcppprefix = info["name"].replace(".", "")
     fh = file(filename, "r").read().split("\n")
@@ -143,13 +149,12 @@ def check_modified_file(filename, errors):
         if cpp_format and filename.endswith('.h') and filename.find("templates") == -1:
             cpp_format.check_header_file(
                 get_file(filename),
-                info["name"].replace(".", ""),
+                info["name"],
                 errors)
         elif cpp_format and filename.endswith('.cpp'):
             cpp_format.check_cpp_file(
                 get_file(filename),
-                info["name"].replace(".",
-                                     ""),
+                info["name"],
                 errors)
     elif filename.endswith('.py'):
         check_python_file(filename, errors)

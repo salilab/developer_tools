@@ -65,23 +65,8 @@ def have_header_guard(scan):
 
 def get_header_guard(filename, project_name):
     """Get prefix and suffix for header guard"""
-    guard_prefix = project_name
-    module = project_name
-    m = re.search('modules\/(\w+)\/', filename)
-    if m:
-        module = m.group(1)
-        guard_prefix += module.upper()
-    base = os.path.basename(filename)
-    # For convenience remove leading module name qualifier if present
-    for prefix in (module, '_'):
-        if base.startswith(prefix):
-            base = base[len(prefix):]
-
-    def repl(match):
-        return match.group(1).upper() + '_' + match.group(2)
-    # Convert CamelCase into CAPS_SEPARATED_BY_UNDERSCORES
-    guard_suffix = re.subn('([a-z]+|[A-Z]{2,})([A-Z0-9])', repl,
-                           base)[0].upper()[:-2] + '_H'
+    guard_prefix = project_name.replace(".", "_").upper()
+    guard_suffix = os.path.split(filename)[1].replace(".", "_").upper()
     return guard_prefix, guard_suffix
 
 
@@ -119,7 +104,7 @@ def check_header_start_end(scan, filename, project_name, errors):
         errors.append('%s:%d: Header guard does not start with "%s".'
                       % (filename, 1, guard_prefix))
         bad = True
-    if not guard.endswith(guard_suffix):
+    if not guard.replace("_", "").endswith(guard_suffix.replace("_", "")):
         errors.append('%s:%d: Header guard does not end with "%s".'
                       % (filename, 1, guard_suffix))
         bad = True
