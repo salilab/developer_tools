@@ -48,7 +48,10 @@ def check_c_file(filename, errors):
     configh = False
     blank = False
     file_line = False
-    exported = filename.find("internal") == -1 and filename.endswith(".h") and filename.find("include") != -1
+    exported = filename.find("internal") == - \
+        1 and filename.endswith(
+            ".h") and filename.find(
+            "include") != -1
     name = os.path.split(filename)[1]
     for (num, line) in enumerate(fh):
         line = line.rstrip('\r\n')
