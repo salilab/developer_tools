@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+
+"""Build Files.cmake listing source files for each src, test, examples,
+   benchmark directory in the subtree."""
+
 import sys
 import glob
 import os

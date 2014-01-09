@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+
+"""Use clang-format and autopep8 when available to clean up the listed source
+   files."""
+
 import glob
 from optparse import OptionParser
 import subprocess

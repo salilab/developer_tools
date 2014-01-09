@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+"""Print out any violations of IMP-specific standards. These are things that
+   are not fixed by cleanup-code.py."""
+
 import sys
 import os.path
 import glob
