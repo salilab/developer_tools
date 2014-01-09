@@ -267,6 +267,15 @@ def setup_sorted_order(source, extra_data_path,
     # return sorted
 
 
+def get_project_info(path):
+    cp = os.path.join(path, ".imp_info.py")
+    if os.path.exists(cp):
+        return eval(open(cp, "r").read())
+    else:
+        if path == "":
+            raise ValueError("no .imp_info.py found")
+        return get_project_info(os.path.split(path)[0])
+
 _subprocesses = []
 
 

@@ -5,6 +5,7 @@ import os.path
 import glob
 import re
 import traceback
+import python_tools
 try:
     import python_tools.cpp_format as cpp_format
 except ImportError:
@@ -16,12 +17,7 @@ except ImportError:
 from optparse import OptionParser
 
 parser = OptionParser()
-parser.add_option("-n", "--name", dest="project_name",
-                  default="IMP",
-                  help="The name of the project.")
 (options, args) = parser.parse_args()
-
-project_name = options.project_name
 
 
 def _check_do_not_commit(line, filename, num, errors):
@@ -33,6 +29,10 @@ def _check_do_not_commit(line, filename, num, errors):
 
 def check_c_file(filename, errors):
     """Check each modified C file to make sure it adheres to the standards"""
+    info = python_tools.get_project_info(filename)
+    docname = info["name"].replace(".", "/")
+    cppprefix = info["name"].replace(".", "_")
+    altcppprefix = info["name"].replace(".", "")
     fh = file(filename, "r").read().split("\n")
     srch = re.compile('\s+$')
     url = re.compile('https?://')
@@ -41,13 +41,9 @@ def check_c_file(filename, errors):
     file_line = False
     exported = filename.find("internal") == -1 and filename.endswith(".h")
     name = os.path.split(filename)[1]
-    module = None
-    # modules/name/include/header.h
-    if os.path.split(os.path.split(os.path.split(os.path.split(filename)[0])[0])[0])[1] == "modules":
-        module = os.path.split(os.path.split(os.path.split(filename)[0])[0])[1]
     for (num, line) in enumerate(fh):
         line = line.rstrip('\r\n')
-        if line.find("\\file %s/%s" % (module, name)) != -1 or line.find("\\file %s/%s/%s" % (project_name, module, name)) != -1:
+        if line.find("\\file %s/%s" % (docname, name)) != -1:
             file_line = True
         # No way to split URLs, so let them exceed 80 characters:
         if line.startswith(">>>>>>> "):
@@ -56,7 +52,8 @@ def check_c_file(filename, errors):
                 (filename, num + 1))
         _check_do_not_commit(line, filename, num, errors)
         if not filename.endswith(".cpp") and line.startswith("#define ") \
-           and not line.startswith("#define %s" % project_name) \
+           and not line.startswith("#define %s" % cppprefix) \
+           and not line.startswith("#define %s" % altcppprefix) \
            and not line.startswith("#define EIGEN_YES_I_KNOW_SPARSE_"
                                    "MODULE_IS_NOT_STABLE_YET"):
             found = False
@@ -66,16 +63,16 @@ def check_c_file(filename, errors):
                     found = True
             if not found:
                 errors.append('%s:%d: error: Preprocessor symbols must start with %s'
-                              % (filename, num + 1, project_name))
+                              % (filename, num + 1, cppprefix))
         blank = (len(line) == 0)
         if line.startswith('#include "'):
             configh = True
         if blank and num == 0:
             errors.append('%s:1: File has leading blank line(s)' % filename)
-    if exported and filename.endswith(".h") and not file_line and module:
+    if exported and filename.endswith(".h") and not file_line:
         errors.append(
             '%s:2: Exported header must have a line \\file %s/%s' %
-            (filename, module, name))
+            (filename, docname, name))
 
 
 def check_python_file(filename, errors):
@@ -138,6 +135,7 @@ def check_modified_file(filename, errors):
     # don't check header guard in template headers
     if filename.find("templates") != -1:
         return
+    info = python_tools.get_project_info(filename)
     if filename.endswith('.h') or filename.endswith('.cpp') \
        or filename.endswith('.c'):
         check_c_file(filename, errors)
@@ -145,10 +143,14 @@ def check_modified_file(filename, errors):
         if cpp_format and filename.endswith('.h') and filename.find("templates") == -1:
             cpp_format.check_header_file(
                 get_file(filename),
-                project_name,
+                info["name"].replace(".", ""),
                 errors)
         elif cpp_format and filename.endswith('.cpp'):
-            cpp_format.check_cpp_file(get_file(filename), project_name, errors)
+            cpp_format.check_cpp_file(
+                get_file(filename),
+                info["name"].replace(".",
+                                     ""),
+                errors)
     elif filename.endswith('.py'):
         check_python_file(filename, errors)
 
