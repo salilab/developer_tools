@@ -29,6 +29,9 @@ parser.add_option("-a", "--autopep8", dest="autopep8",
 parser.add_option("-e", "--exclude", dest="exclude",
                   default="eigen3:config_templates",
                   help="Color separated list of dirnames to ignore.")
+parser.add_option("-v", "--verbose", dest="verbose",
+                  default=False,
+                  help="Print extra info.")
 (options, args) = parser.parse_args()
 
 # clang-format-3.4",
@@ -81,7 +84,7 @@ class ThreadPool:
     def __init__(self, num_threads=-1):
         if num_threads == -1:
             num_threads = 2 * multiprocessing.cpu_count()
-        print "Creating thread pool with", num_threads
+            # print "Creating thread pool with", num_threads
         self.tasks = Queue(-1)
         for _ in range(num_threads):
             _Worker(self.tasks)
@@ -157,14 +160,15 @@ def clean_py(path):
 
 
 def main():
-    if options.autopep8 is None:
-        print "autopep8 not found"
-    else:
-        print "autopep8 is `%s`" % options.autopep8
-    if options.clang_format is None:
-        print "clang-format not found"
-    else:
-        print "clang-format is `%s`" % options.clang_format
+    if options.verbose:
+        if options.autopep8 is None:
+            print "autopep8 not found"
+        else:
+            print "autopep8 is `%s`" % options.autopep8
+        if options.clang_format is None:
+            print "clang-format not found"
+        else:
+            print "clang-format is `%s`" % options.clang_format
 
     tp = ThreadPool()
 
