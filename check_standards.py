@@ -40,8 +40,8 @@ def check_c_file(filename, errors):
     elif filepath.find("include") != -1:
         docname = docname + "/" + \
             filepath[filepath.find("include") + len("include"):]
-    cppprefix = info["name"].replace(".", "_")
-    altcppprefix = info["name"].replace(".", "")
+    cppprefix = info["name"].replace(".", "_").upper()
+    altcppprefix = info["name"].replace(".", "").upper()
     fh = file(filename, "r").read().split("\n")
     srch = re.compile('\s+$')
     url = re.compile('https?://')
@@ -55,7 +55,7 @@ def check_c_file(filename, errors):
     name = os.path.split(filename)[1]
     for (num, line) in enumerate(fh):
         line = line.rstrip('\r\n')
-        if line.find("\\file %s/%s" % (docname, name)) != -1:
+        if line.find("\\file %s%s" % (docname, name)) != -1:
             file_line = True
         # No way to split URLs, so let them exceed 80 characters:
         if line.startswith(">>>>>>> "):
@@ -83,7 +83,7 @@ def check_c_file(filename, errors):
             errors.append('%s:1: File has leading blank line(s)' % filename)
     if exported and filename.endswith(".h") and not file_line:
         errors.append(
-            '%s:2: Exported header must have a line \\file %s/%s' %
+            '%s:2: Exported header must have a line \\file %s%s' %
             (filename, docname, name))
 
 

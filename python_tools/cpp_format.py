@@ -65,7 +65,7 @@ def have_header_guard(scan):
 
 def get_header_guard(filename, project_name):
     """Get prefix and suffix for header guard"""
-    guard_prefix = project_name.replace(".", "_").upper()
+    guard_prefix = project_name.replace(".", "").upper()
     guard_suffix = os.path.split(filename)[1].replace(".", "_").upper()
     return guard_prefix, guard_suffix
 
