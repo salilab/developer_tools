@@ -32,7 +32,7 @@ for h in sys.argv[3:]:
         pat = os.path.join(h, "*.h")
         allh = sorted(glob.glob(pat))
     else:
-        allh = h
+        allh = [h]
     for g in allh:
         name = os.path.split(g)[1]
         output.append("#include <%s/" % sys.argv[2] + name + ">")
