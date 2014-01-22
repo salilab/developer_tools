@@ -12,7 +12,6 @@ import sys
 import multiprocessing
 from Queue import Queue
 from threading import Thread
-import autopep8
 import distutils.spawn
 
 sys.path.append(os.path.split(sys.argv[0]))
