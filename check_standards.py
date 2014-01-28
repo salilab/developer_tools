@@ -55,7 +55,7 @@ def check_c_file(filename, errors):
     name = os.path.split(filename)[1]
     for (num, line) in enumerate(fh):
         line = line.rstrip('\r\n')
-        if line.find("\\file %s%s" % (docname, name)) != -1:
+        if line.find("\\file %s" % "/".join([docname, name])) != -1:
             file_line = True
         # No way to split URLs, so let them exceed 80 characters:
         if line.startswith(">>>>>>> "):
@@ -83,8 +83,8 @@ def check_c_file(filename, errors):
             errors.append('%s:1: File has leading blank line(s)' % filename)
     if exported and filename.endswith(".h") and not file_line:
         errors.append(
-            '%s:2: Exported header must have a line \\file %s%s' %
-            (filename, docname, name))
+            '%s:2: Exported header must have a line \\file %s' %
+            (filename, "/".join([docname, name])))
 
 
 def check_python_file(filename, errors):
