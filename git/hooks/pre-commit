@@ -24,14 +24,14 @@ exec 1>&2
 files=`git diff --cached --name-only --diff-filter=ACM`
 if test -n "$files"
 then
-  if python `git rev-parse --show-toplevel`/tools/developer_tools/cleanup_code.py $files
+  if python `git rev-parse --show-toplevel`/tools/dev_tools/cleanup_code.py $files
   then
     echo "Reformated source files."
   else
     exit 1
   fi
   echo "checking standards on" $files
-  if python `git rev-parse --show-toplevel`/tools/developer_tools/check_standards.py $files
+  if python `git rev-parse --show-toplevel`/tools/dev_tools/check_standards.py $files
   then
     echo "Standards checks OK."
   else
