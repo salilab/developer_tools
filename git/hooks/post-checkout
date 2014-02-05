@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git submodule update --recursive
+git submodule update --recursive --init
 
 `git rev-parse --show-toplevel`/tools/developer_tools/cleanup_pycs.py
 `git rev-parse --show-toplevel`/tools/developer_tools/setup_cmake.py > /dev/null

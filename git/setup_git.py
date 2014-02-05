@@ -82,24 +82,3 @@ if config_contents.find("autosetuprebase = always") == -1:
 # hard to check for
 os.system(git_config + " branch.develop.rebase true")
 os.system(git_config + " branch.master.rebase true")
-
-subprojects = []
-cmd = subprocess.Popen(["git", "submodule", "foreach", "--quiet", "pwd"],
-                       stdout=subprocess.PIPE)
-subprojects += [x for x in cmd.stdout.read().split('\n') if x is not ""]
-exclude = os.path.join(".git", "info", "exclude")
-if os.path.exists(exclude):
-    subprojects += [
-        x for x in open(
-            exclude,
-            "r").read(
-        ).split(
-            "\n") if not x.startswith(
-            "#") and not x.isspace(
-        ) and x != ""]
-
-for s in subprojects:
-    su = os.path.join(s, "setup_git.py")
-    if os.path.exists(su):
-        print "Recursively setting up '%s', '%s'" % (s, su)
-        os.system(su)
