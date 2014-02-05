@@ -10,10 +10,10 @@ import os
 import os.path
 os.system("git submodule update --init --recursive")
 os.system("git submodule update --recursive")
-os.system(os.path.join("tools", "developer_tools", "git", "setup_git.py"))
+os.system(os.path.join("tools", "dev_tools", "git", "setup_git.py"))
 """
 
-dev_tools_path = os.path.join("tools", "developer_tools")
+dev_tools_path = os.path.join("tools", "dev_tools")
 
 sys.path.append(dev_tools_path)
 import python_tools
@@ -38,8 +38,8 @@ else:
         print >> sys.stderr, "Script must be run from a git root directory"
         exit(1)
 
-    if not os.path.exists(os.path.join("tools", "developer_tools")):
-        print >> sys.stderr, "Script expects to find tools/developer_tools"
+    if not os.path.exists(os.path.join("tools", "dev_tools")):
+        print >> sys.stderr, "Script expects to find tools/dev_tools"
         exit(1)
 
     python_tools.link_dir(os.path.join(dev_tools_path, "git", "hooks"),
