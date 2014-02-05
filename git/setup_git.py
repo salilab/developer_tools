@@ -42,13 +42,16 @@ else:
         print >> sys.stderr, "Script expects to find tools/dev_tools"
         exit(1)
 
+    cmd = subprocess.Popen(["git", "rev-parse", "--git-dir"],
+                           stdout=subprocess.PIPE)
+    git_dir = cmd.stdout.read().split('\n')[0]
     python_tools.link_dir(os.path.join(dev_tools_path, "git", "hooks"),
-                          os.path.join(".git", "hooks"))
+                          os.path.join(git_dir, "hooks"))
 
-    config_contents = open(os.path.join(".git", "config"), "r").read()
+    config_contents = open(os.path.join(git_dir, "config"), "r").read()
 
     # make sure version is updated
-    os.system(os.path.join(".", ".git", "hooks", "post-commit"))
+    os.system(os.path.join(".", git_dir, "hooks", "post-commit"))
 
 # hard to check for
 os.system(git_config + " push.default nothing")
