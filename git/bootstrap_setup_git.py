@@ -4,6 +4,6 @@ copied to the main directory of your project and named setup_git.py."""
 
 import os
 import os.path
-os.system("git submodule update --init --recursive")
-os.system("git submodule update --recursive")
+os.system("git submodule update --init --recursive --rebase")
+os.system("git submodule update --recursive --rebase")
 os.system(os.path.join("tools", "dev_tools", "git", "setup-git.py"))

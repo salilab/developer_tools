@@ -31,8 +31,6 @@ if options.glob:
     config_contents = ""
 else:
     git_config = "git config --replace-all"
-    os.system("git submodule update --init --recursive")
-    os.system("git submodule update --recursive")
 
     if not os.path.exists(".git"):
         print >> sys.stderr, "Script must be run from a git root directory"
