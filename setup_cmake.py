@@ -44,7 +44,7 @@ def search_start(d):
         cp = os.path.join(d, cd)
         if cd in ["bin", "src", "test", "examples", "benchmark"]:
             make_files(cp)
-        else:
+        elif not cp.endswith('gitflow'):
             search_start(cp)
 
 search_start(".")
