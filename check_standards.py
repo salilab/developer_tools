@@ -86,7 +86,7 @@ def check_c_file(filename, errors):
     if exported and filename.endswith(".h") and not file_line:
         # lazy hack with the replace
         errors.append(
-            '%s:2: Exported header must have a line  %s' % file_line_string)
+            '%s:2: Exported header must have a line  %s' % (filename, file_line_string))
 
 
 def check_python_file(filename, errors):
