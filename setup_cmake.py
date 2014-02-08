@@ -18,7 +18,7 @@ def _get_files(ds, suffix):
     for (dirpath, dirnames, filenames) in os.walk(ds):
         reldirpath = dirpath[len(ds) + 1:]
         for f in filenames:
-            if f.endswith(suffix):
+            if f.endswith(suffix) and not f.startswith("_"):
                 joined = os.path.join(reldirpath, f)
                 ret.append(joined.replace("\\", "/"))
     ret.sort()
