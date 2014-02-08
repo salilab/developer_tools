@@ -5,14 +5,6 @@ import subprocess
 import glob
 from optparse import OptionParser
 
-"""
-import os
-import os.path
-os.system("git submodule update --init --recursive")
-os.system("git submodule update --recursive")
-os.system(os.path.join("tools", "dev_tools", "git", "setup_git.py"))
-"""
-
 dev_tools_path = os.path.join("tools", "dev_tools")
 
 sys.path.append(dev_tools_path)
