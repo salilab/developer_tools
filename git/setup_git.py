@@ -34,8 +34,12 @@ else:
                            stdout=subprocess.PIPE)
     git_dir = cmd.stdout.read().split('\n')[0]
     hdir = os.path.join(git_dir, "hooks")
+    print "Installing git hooks in", hdir
     for f in glob.glob(os.path.join(dev_tools_path, "git", "hooks", "*")):
-        shutil.copy2(f, hdir)
+        out = os.path.join(hdir, os.path.split(f)[1])
+        if os.path.exists(out):
+            os.unlink(out)
+        shutil.copy2(f, out)
     shutil.copy2(os.path.join(dev_tools_path, "check_standards.py"), hdir)
     shutil.copytree(
         os.path.join(
