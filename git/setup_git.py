@@ -34,20 +34,20 @@ else:
                            stdout=subprocess.PIPE)
     git_dir = cmd.stdout.read().split('\n')[0]
     hdir = os.path.join(git_dir, "hooks")
-    print "Installing git hooks in", hdir
     for f in glob.glob(os.path.join(dev_tools_path, "git", "hooks", "*")):
         out = os.path.join(hdir, os.path.split(f)[1])
         if os.path.exists(out):
             os.unlink(out)
         shutil.copy2(f, out)
     shutil.copy2(os.path.join(dev_tools_path, "check_standards.py"), hdir)
+    out_tools = os.path.join(hdir, "python_tools")
+    if os.path.exists(out_tools):
+        shutil.rmtree(out_tools)
     shutil.copytree(
         os.path.join(
             dev_tools_path,
             "python_tools"),
-        os.path.join(
-            hdir,
-            "python_tools"))
+        out_tools)
     config_contents = open(os.path.join(git_dir, "config"), "r").read()
 
     # make sure version is updated
