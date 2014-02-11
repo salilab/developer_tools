@@ -4,11 +4,9 @@ import os.path
 import subprocess
 import glob
 from optparse import OptionParser
+import shutil
 
 dev_tools_path = os.path.join("tools", "dev_tools")
-
-sys.path.append(dev_tools_path)
-import python_tools
 
 
 opt = OptionParser()
@@ -35,9 +33,17 @@ else:
     cmd = subprocess.Popen(["git", "rev-parse", "--git-dir"],
                            stdout=subprocess.PIPE)
     git_dir = cmd.stdout.read().split('\n')[0]
-    python_tools.link_dir(os.path.join(dev_tools_path, "git", "hooks"),
-                          os.path.join(git_dir, "hooks"))
-
+    hdir = os.path.join(git_dir, "hooks")
+    for f in glob.glob(os.path.join(dev_tools_path, "git", "hooks", "*")):
+        shutil.copy2(f, hdir)
+    shutil.copy2(os.path.join(dev_tools_path, "check_standards.py"), hdir)
+    shutil.copytree(
+        os.path.join(
+            dev_tools_path,
+            "python_tools"),
+        os.path.join(
+            hdir,
+            "python_tools"))
     config_contents = open(os.path.join(git_dir, "config"), "r").read()
 
     # make sure version is updated
