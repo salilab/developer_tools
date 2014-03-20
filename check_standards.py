@@ -40,7 +40,7 @@ def check_c_file(filename, errors):
     elif filepath.find("include") != -1:
         docname = docname + "/" + \
             filepath[filepath.find("include") + len("include"):]
-    cppprefix = info["name"].replace(".", "_").upper()
+    cppprefix = info["name"].split('.')[0] + '_'
     altcppprefix = info["name"].replace(".", "").upper()
     fh = file(filename, "r").read().split("\n")
     srch = re.compile('\s+$')
@@ -76,8 +76,8 @@ def check_c_file(filename, errors):
                 if onum > num and oline.startswith(fline):
                     found = True
             if not found:
-                errors.append('%s:%d: error: Preprocessor symbols must start with %s'
-                              % (filename, num + 1, cppprefix))
+                errors.append('%s:%d: error: Preprocessor symbols must start with %s or %s'
+                              % (filename, num + 1, cppprefix, altcppprefix))
         blank = (len(line) == 0)
         if line.startswith('#include "'):
             configh = True
