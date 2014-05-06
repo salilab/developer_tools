@@ -99,10 +99,7 @@ def check_python_file(filename, errors):
     import_from = re.compile('[ ]*from [ ]*.* [ ]*import [ ]*.*')
     tests = []
 
-    if filename.find("example") != -1:
-        is_example = True
-    else:
-        is_example = False
+    is_example = "examples" in filename.split()[0]
     for (num, line) in enumerate(file(filename, "r")):
         if num == 0 and is_example:
             if not line.startswith("## "):
