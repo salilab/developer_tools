@@ -14,11 +14,11 @@ includepath = sys.argv[1][sys.argv[1].find("include") + len("include") + 1:]
 
 output = ["""/**
  *  \\file %s
- *  \\brief A container which has pairs which ensure a set is connected
+ *  \\brief Include all non-deprecated headers in %s.
  *
  *  Copyright 2007-2014 IMP Inventors. All rights reserved.
  */
-""" % includepath]
+""" % (includepath, includepath[:-2].replace('/', '.'))]
 guard = includepath.replace(
     "/",
     "_").replace("\\",
