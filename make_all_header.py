@@ -31,6 +31,7 @@ for h in sys.argv[3:]:
     if not h.endswith(".h"):
         pat = os.path.join(h, "*.h")
         allh = sorted(glob.glob(pat))
+        allh = [x for x in allh if 'DEPRECATED_HEADER' not in open(x).read()]
     else:
         allh = [h]
     for g in allh:
