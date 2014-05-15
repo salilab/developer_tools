@@ -70,7 +70,7 @@ class _Worker(Thread):
             func, args, kargs = self.tasks.get()
             try:
                 func(*args, **kargs)
-            except Exception as e:
+            except Exception, e:
                 print e
                 error = str(e)
             self.tasks.task_done()
