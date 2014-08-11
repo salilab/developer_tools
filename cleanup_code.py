@@ -18,17 +18,20 @@ sys.path.append(os.path.split(sys.argv[0]))
 import python_tools
 
 
-parser = OptionParser()
+parser = OptionParser(description="""Reformat all C++ and Python files
+under the current directory (using the clang-format and autopep8 tools,
+if available).
+""")
 parser.add_option("-c", "--clang-format", dest="clang_format",
-                  default="auto",
+                  default="auto", metavar="EXE",
                   help="The clang-format command.")
 parser.add_option("-a", "--autopep8", dest="autopep8",
-                  default="auto",
+                  default="auto", metavar="EXE",
                   help="The autopep8 command.")
 parser.add_option("-e", "--exclude", dest="exclude",
-                  default="eigen3:config_templates",
+                  default="eigen3:config_templates", metavar="DIRS",
                   help="Color separated list of dirnames to ignore.")
-parser.add_option("-v", "--verbose", dest="verbose",
+parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
                   default=False,
                   help="Print extra info.")
 (options, args) = parser.parse_args()
