@@ -73,7 +73,7 @@ class _Worker(Thread):
             func, args, kargs = self.tasks.get()
             try:
                 func(*args, **kargs)
-            except Exception, e:
+            except Exception as e:
                 print e
                 error = str(e)
             self.tasks.task_done()
@@ -153,7 +153,7 @@ def clean_cpp(path):
 def clean_py(path):
     if options.autopep8:
         contents = _run([options.autopep8, "--aggressive", "--aggressive",
-                         "--ignore=E24,W602", path])
+                         path])
     else:
         contents = open(path, "r").read()
     if contents.find("# \\example") != -1:
