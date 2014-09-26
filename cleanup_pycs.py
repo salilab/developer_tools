@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """Traverses the directory tree deleting any .pyc's who do not have a source .py.
 Helpful when switching between revisions with source control."""
 from os.path import join

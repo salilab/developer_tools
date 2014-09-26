@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """Make a header that lists other headers.
 usage: make_all_header.py header_name.h include_prefix headers
 """
