@@ -16,25 +16,38 @@ import distutils.spawn
 
 sys.path.append(os.path.split(sys.argv[0]))
 import python_tools
+from python_tools.reindent import Reindenter
 
 
-parser = OptionParser(description="""Reformat all C++ and Python files
-under the current directory (using the clang-format and autopep8 tools,
-if available).
+parser = OptionParser(usage="%prog [options] [FILENAME ...]",
+               description="""Reformat the given C++ and Python files
+under (using the clang-format tool if available and
+reindent.py, respectively). If the --all option is given, reformat all such
+files under the current directory.
+
+If the autopep8 tool is also available, it can be used instead of reindent.py
+by giving the -a option. autopep8 is much more aggressive than reindent.py
+and will fix other issues, such as use of old-style Python syntax. 
 """)
 parser.add_option("-c", "--clang-format", dest="clang_format",
                   default="auto", metavar="EXE",
                   help="The clang-format command.")
-parser.add_option("-a", "--autopep8", dest="autopep8",
+parser.add_option("-a", dest="use_ap", action="store_true", default=False,
+                  help="Use autopep8 rather than reindent.py for Python files.")
+parser.add_option("--all", dest="all_files", action="store_true", default=False,
+                  help="Reformat all files under current directory")
+parser.add_option("--autopep8", dest="autopep8",
                   default="auto", metavar="EXE",
                   help="The autopep8 command.")
 parser.add_option("-e", "--exclude", dest="exclude",
                   default="eigen3:config_templates", metavar="DIRS",
-                  help="Color separated list of dirnames to ignore.")
+                  help="Colon-separated list of dirnames to ignore.")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
                   default=False,
                   help="Print extra info.")
 (options, args) = parser.parse_args()
+if not args and not options.all_files:
+    parser.error("No files selected")
 
 # clang-format-3.4",
 # autopep8
@@ -151,11 +164,13 @@ def clean_cpp(path):
 
 
 def clean_py(path):
-    if options.autopep8:
+    if options.use_ap and options.autopep8:
         contents = _run([options.autopep8, "--aggressive", "--aggressive",
                          path])
     else:
-        contents = open(path, "r").read()
+        r = Reindenter(open(path))
+        r.run()
+        contents = ''.join(r.after)
     if contents.find("# \\example") != -1:
         contents = "#" + contents
     python_tools.rewrite(path, contents)
@@ -174,13 +189,17 @@ def main():
 
     tp = ThreadPool()
 
-    for f in _get_files(".py"):
-        # print f
-        tp.add_task(clean_py, f)
-
-    for f in _get_files(".h") + _get_files(".cpp"):
-        # print f
-        tp.add_task(clean_cpp, f)
+    if args:
+        for f in args:
+            if f.endswith(".py"):
+                tp.add_task(clean_py, f)
+            elif f.endswith(".h") or f.endwith(".cpp"):
+                tp.add_task(clean_cpp, f)
+    elif options.all_files:
+        for f in _get_files(".py"):
+            tp.add_task(clean_py, f)
+        for f in _get_files(".h") + _get_files(".cpp"):
+            tp.add_task(clean_cpp, f)
     tp.wait_completion()
 
 if __name__ == '__main__':
