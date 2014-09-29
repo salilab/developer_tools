@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-"""Print out any violations of IMP-specific standards. These are things that
-   are not fixed by cleanup-code.py."""
+"""Print out any violations of IMP-specific standards."""
 
 import sys
 import os.path
@@ -9,6 +8,7 @@ import glob
 import re
 import traceback
 import python_tools
+from python_tools.reindent import Reindenter
 try:
     import python_tools.cpp_format as cpp_format
 except ImportError:
@@ -92,6 +92,9 @@ def check_c_file(filename, errors):
 def check_python_file(filename, errors):
     """Check each modified Python file to make sure it adheres to the
        standards"""
+    if Reindenter(open(filename)).run():
+        errors.append('%s:1: Indentation is inconsistent; please run through '
+                      'tools/dev_tools/cleanup_code.py' % filename)
     temptest = re.compile('\s+def\s+temp_hide_test.*')
     test = re.compile(
         '\s+def\s+(test_[abcdefghijklmnopqrstuvwxyz0123456789_]*)\(')
