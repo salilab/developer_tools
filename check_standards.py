@@ -144,7 +144,7 @@ def get_file(filename):
 def check_modified_file(filename, errors):
     """Check each modified file to make sure it adheres to the standards"""
     # skip code that isn't ours
-    if filename.find("dependency") != -1:
+    if filename.find("dependency") != -1 or "/eigen3/" in filename:
         return
     # don't check header guard in template headers
     if filename.find("templates") != -1:

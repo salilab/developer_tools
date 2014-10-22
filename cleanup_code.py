@@ -155,6 +155,9 @@ def _run(cmd):
 
 
 def clean_cpp(path):
+    # skip code that isn't ours
+    if "dependency" in path or "/eigen3/" in path:
+        return
     if options.clang_format:
         contents = _run([options.clang_format, "--style=Google", path])
     else:
