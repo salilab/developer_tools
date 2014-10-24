@@ -42,7 +42,7 @@ def search_start(d):
         if cd.startswith("."):
             continue
         cp = os.path.join(d, cd)
-        if cd in ["bin", "src", "test", "examples", "benchmark"]:
+        if cd in ["bin", "src", "test", "examples", "benchmark", "utility"]:
             make_files(cp)
         elif not cp.endswith('gitflow'):
             search_start(cp)
