@@ -196,7 +196,7 @@ def main():
         for f in args:
             if f.endswith(".py"):
                 tp.add_task(clean_py, f)
-            elif f.endswith(".h") or f.endwith(".cpp"):
+            elif f.endswith(".h") or f.endswith(".cpp"):
                 tp.add_task(clean_cpp, f)
     elif options.all_files:
         for f in _get_files(".py"):
