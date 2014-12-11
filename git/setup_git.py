@@ -24,15 +24,15 @@ else:
     git_config = "git config --replace-all"
 
     if not os.path.exists(".git"):
-        print >> sys.stderr, "Script must be run from a git root directory"
+        sys.stderr.write("Script must be run from a git root directory\n")
         exit(1)
 
     if not os.path.exists(os.path.join("tools", "dev_tools")):
-        print >> sys.stderr, "Script expects to find tools/dev_tools"
+        sys.stderr.write("Script expects to find tools/dev_tools\n")
         exit(1)
 
     cmd = subprocess.Popen(["git", "rev-parse", "--git-dir"],
-                           stdout=subprocess.PIPE)
+                           stdout=subprocess.PIPE, universal_newlines=True)
     git_dir = cmd.stdout.read().split('\n')[0]
     hdir = os.path.join(git_dir, "hooks")
     for f in glob.glob(os.path.join(dev_tools_path, "git", "hooks", "*")):
@@ -59,7 +59,7 @@ os.system(git_config + " push.default nothing")
 os.system(git_config + " log.decorate full")
 
 if config_contents.find("color \"branch\"") == -1:
-    print "Updating git colors"
+    print("Updating git colors")
     os.system(git_config + " color.ui true")
     os.system(git_config + " color.branch true")
     os.system(git_config + " color.diff true")
@@ -75,13 +75,13 @@ if config_contents.find("color \"branch\"") == -1:
     os.system(git_config + " color.status.changed green")
     os.system(git_config + " color.status.untracked cyan")
 if config_contents.find("whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol") == -1:
-    print "Telling git to clean up whitespace"
+    print("Telling git to clean up whitespace")
     os.system(
         git_config +
         " core.whitespace \"fix,-indent-with-non-tab,trailing-space,cr-at-eol\"")
 
 if config_contents.find("autosetuprebase = always") == -1:
-    print "Telling git to rebase by default on pull"
+    print("Telling git to rebase by default on pull")
     os.system(git_config + " branch.autosetuprebase always")
 # hard to check for
 os.system(git_config + " branch.develop.rebase true")
