@@ -28,4 +28,5 @@ for directory in directories:
             count += 1
 
 if count > 0:
-    print 'Removed \033[91m%d\033[0m file%s' % (count, 's' if count > 1 else '')
+    print('Removed \033[91m%d\033[0m file%s'
+          % (count, 's' if count > 1 else ''))

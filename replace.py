@@ -7,7 +7,7 @@ import sys
 import os
 
 if len(sys.argv) < 3:
-    print "usage:", sys.argv[0], " find_string replace_string files...."
+    print("usage:", sys.argv[0], " find_string replace_string files....")
     exit(1)
 
 instring = sys.argv[1]

@@ -87,7 +87,7 @@ class _Worker(Thread):
             try:
                 func(*args, **kargs)
             except Exception as e:
-                print e
+                print(e)
                 error = str(e)
             self.tasks.task_done()
 
@@ -146,10 +146,10 @@ def _get_files(glb):
 def _run(cmd):
     # print " ".join(cmd)
     pro = subprocess.Popen(cmd, stderr=subprocess.PIPE,
-                           stdout=subprocess.PIPE)
+                           stdout=subprocess.PIPE, universal_newlines=True)
     output, error = pro.communicate()
     if pro.returncode != 0:
-        print " ".join(cmd)
+        print(" ".join(cmd))
         raise RuntimeError("error running " + error)
     return output
 
@@ -182,13 +182,13 @@ def clean_py(path):
 def main():
     if options.verbose:
         if options.autopep8 is None:
-            print "autopep8 not found"
+            print("autopep8 not found")
         else:
-            print "autopep8 is `%s`" % options.autopep8
+            print("autopep8 is `%s`" % options.autopep8)
         if options.clang_format is None:
-            print "clang-format not found"
+            print("clang-format not found")
         else:
-            print "clang-format is `%s`" % options.clang_format
+            print("clang-format is `%s`" % options.clang_format)
 
     tp = ThreadPool()
 

@@ -13,9 +13,9 @@ try:
     import python_tools.cpp_format as cpp_format
 except ImportError:
     cpp_format = None
-    print "Cannot conduct additional C++ format checks without the Python "
-    print "Pygments (http://pygments.org/) library: please install."
-    print
+    print("Cannot conduct additional C++ format checks without the Python ")
+    print("Pygments (http://pygments.org/) library: please install.")
+    print()
 
 from optparse import OptionParser
 
@@ -193,7 +193,7 @@ def main():
     errors = []
     if len(args) == 0:
         modfiles = get_all_files()
-        print "usage:", sys.argv[0], "file_patterns"
+        print("usage:", sys.argv[0], "file_patterns")
     else:
         modfiles = args
     for pattern in modfiles:
@@ -203,7 +203,7 @@ def main():
             try:
                 check_modified_file(filename, errors)
             except:
-                print "Exception processing file " + filename
+                print("Exception processing file " + filename)
                 traceback.print_exc()
     if len(errors) > 0:
         sys.stderr.write("The following problems needed to be fixed:\n\n")
