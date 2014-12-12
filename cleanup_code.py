@@ -10,7 +10,10 @@ import fnmatch
 import os
 import sys
 import multiprocessing
-from Queue import Queue
+try:
+    from queue import Queue # python3
+except ImportError:
+    from Queue import Queue # python2
 from threading import Thread
 import distutils.spawn
 
