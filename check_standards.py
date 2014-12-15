@@ -99,7 +99,7 @@ def check_python_file(filename, errors):
     test = re.compile(
         '\s+def\s+(test_[abcdefghijklmnopqrstuvwxyz0123456789_]*)\(')
     import_as = re.compile('[ ]*import [ ]*.* [ ]*as [ ]*.*')
-    import_from = re.compile('[ ]*from [ ]*.* [ ]*import [ ]*.*')
+    import_from = re.compile('[ ]*from [ ]*(.*) [ ]*import [ ]*.*')
     tests = []
 
     is_example = "examples" in filename.split()[0]
@@ -131,7 +131,8 @@ def check_python_file(filename, errors):
                 errors.append(
                     '%s:%d: Examples should not rename types on import as that confuses doxygen: ' %
                     (filename, num + 1) + line)
-            if import_from.match(line):
+            m = import_from.match(line)
+            if m and m.group(1) != '__future__':
                 errors.append(
                     '%s:%d: Examples should not use import from as that confuses doxygen: ' %
                     (filename, num + 1) + line)
