@@ -45,8 +45,8 @@ dryrun  = 0
 
 def usage(msg=None):
     if msg is not None:
-        sys.stderr.write(msg + '\n')
-    sys.stderr.write(__doc__ + '\n')
+        sys.stderr.write(msg + "\n")
+    sys.stderr.write(__doc__ + "\n")
 
 def errprint(*args):
     sep = ""
@@ -85,7 +85,7 @@ def main():
 def check(file):
     if os.path.isdir(file) and not os.path.islink(file):
         if verbose:
-            print("listing directory", file)
+            print("listing directory %s" % file)
         names = os.listdir(file)
         for name in names:
             fullname = os.path.join(file, name)
@@ -96,7 +96,7 @@ def check(file):
         return
 
     if verbose:
-        sys.stdout.write("checking", file, "...")
+        sys.stdout.write("checking %s..." % file)
     try:
         f = open(file)
     except IOError as msg:
@@ -116,12 +116,12 @@ def check(file):
                 os.remove(bak)
             os.rename(file, bak)
             if verbose:
-                print("renamed", file, "to", bak)
+                print("renamed %s to %s" % (file, bak))
             f = open(file, "w")
             r.write(f)
             f.close()
             if verbose:
-                print("wrote new", file)
+                print("wrote new " + file)
     else:
         if verbose:
             print("unchanged.")
@@ -163,7 +163,8 @@ class Reindenter:
         self.stats = []
 
     def run(self):
-        tokenize.tokenize(self.getline, self.tokeneater)
+        for token in tokenize.generate_tokens(self.getline):
+            self.tokeneater(*token)
         # Remove trailing empty lines.
         lines = self.lines
         while lines and lines[-1] == "\n":
@@ -193,7 +194,7 @@ class Reindenter:
                     want = have2want.get(have, -1)
                     if want < 0:
                         # Then it probably belongs to the next real stmt.
-                        for j in xrange(i+1, len(stats)-1):
+                        for j in range(i+1, len(stats)-1):
                             jline, jlevel = stats[j]
                             if jlevel >= 0:
                                 if have == getlspace(lines[jline]):
@@ -203,7 +204,7 @@ class Reindenter:
                                            # comment like this one,
                         # in which case we should shift it like its base
                         # line got shifted.
-                        for j in xrange(i-1, -1, -1):
+                        for j in range(i-1, -1, -1):
                             jline, jlevel = stats[j]
                             if jlevel >= 0:
                                 want = have + getlspace(after[jline-1]) - \
@@ -250,7 +251,7 @@ class Reindenter:
                    NEWLINE=tokenize.NEWLINE,
                    COMMENT=tokenize.COMMENT,
                    NL=tokenize.NL):
-        sline, scol = start
+        (sline, scol) = start
 
         if type == NEWLINE:
             # A program statement, or ENDMARKER, will eventually follow,
