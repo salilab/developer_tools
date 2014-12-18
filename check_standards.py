@@ -103,7 +103,7 @@ def check_python_file(filename, errors):
     tests = []
 
     is_example = "examples" in filename.split()[0]
-    for (num, line) in enumerate(file(filename, "r")):
+    for (num, line) in enumerate(open(filename, "r")):
         if num == 0 and is_example:
             if not line.startswith("## "):
                 errors.append('%s:%d: Example does not have doxygen comments at start'
@@ -139,7 +139,7 @@ def check_python_file(filename, errors):
 
 
 def get_file(filename):
-    return (file(filename, 'r'), filename)
+    return (open(filename, 'r'), filename)
 
 
 def check_modified_file(filename, errors):
