@@ -54,4 +54,4 @@ for h in sys.argv[3:]:
         output.append("#endif")
 
 output.append("#endif /* %s */" % guard)
-python_tools.rewrite(sys.argv[1], "\n".join(output))
+python_tools.rewrite(sys.argv[1], "\n".join(output) + "\n")
