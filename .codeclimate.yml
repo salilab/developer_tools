@@ -22,4 +22,4 @@ ratings:
   - "**.py"
   - "**.rb"
 exclude_paths:
-  - python_tools/reindent.py
+- python_tools/reindent.py
