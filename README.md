@@ -15,3 +15,6 @@ This project contains tools that are used by a variety of development projects. 
 - replacing strings in source files: `replace.py` does find and replace,
   only modifying files that are changed (sed touches all passed files).
 - git support: see the `git` subdir.
+
+Most of the scripts are Python scripts, and should work with Python 2.6 or
+later (including Python 3).
