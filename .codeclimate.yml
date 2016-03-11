@@ -25,5 +25,7 @@ ratings:
   - "**.php"
   - "**.py"
   - "**.rb"
+  - "**.sh"
+  - "**.md"
 exclude_paths:
 - python_tools/reindent.py
