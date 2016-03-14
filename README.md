@@ -3,7 +3,8 @@
 
 # Developer Tools
 
-This project contains tools that are used by a variety of development projects. In particular it provides tools to deal with
+This project contains tools that are used by a variety of development projects.
+In particular it provides tools to deal with
 
 - source code standards: `check_standards.py` checks various coding standards
   and `cleanup_code.py` autoformats code files (using `autopep8` and
