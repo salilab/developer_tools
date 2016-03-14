@@ -38,7 +38,7 @@ untracked=$(git status -u --porcelain | grep '^??')
 if test -n "$untracked"
 then
   echo "$(tput setaf 1)ERROR: There are untracked files in your repository.$(tput sgr0)"
-  echo "If you want to keep them around you can add them to your .git/info/exclude file: $(echo $untracked | cut -f2 -d\ )"
+  echo "If you want to keep them around you can add them to your .git/info/exclude file: $(echo "$untracked" | cut -f2 -d\ )"
   echo "You can use --no-verify to skip checks if you are sure that is what you want."
   exit 1
 fi
