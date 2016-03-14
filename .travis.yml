@@ -3,4 +3,4 @@ python:
   - "2.6"
   - "2.7"
   - "3.5"
-script: nosetests
+script: nosetests --with-coverage --cover-package=. --cover-branch --cover-erase
