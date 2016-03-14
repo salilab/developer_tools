@@ -3,4 +3,6 @@ python:
   - "2.6"
   - "2.7"
   - "3.5"
+install: pip install coveralls
 script: nosetests --with-coverage --cover-package=. --cover-branch --cover-erase
+after_success: coveralls
