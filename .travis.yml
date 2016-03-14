@@ -4,5 +4,5 @@ python:
   - "2.7"
   - "3.5"
 install: pip install coveralls
-script: nosetests --with-coverage --cover-package=. --cover-branch --cover-erase
+script: nosetests --with-coverage --cover-package=. --cover-erase
 after_success: coveralls

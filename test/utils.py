@@ -27,7 +27,7 @@ if 'coverage' in sys.modules:
 import coverage
 import atexit
 
-_cov = coverage.coverage(branch=True, data_suffix=True, auto_data=True,
+_cov = coverage.coverage(branch=False, data_suffix=True, auto_data=True,
                          data_file='%s/.coverage')
 _cov.start()
 
