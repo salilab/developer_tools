@@ -3,6 +3,9 @@ python:
   - "2.6"
   - "2.7"
   - "3.5"
-install: pip install coveralls
 script: nosetests --with-coverage --cover-package=. --cover-erase
-after_success: coveralls debug
+after_success:
+  - |
+    if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      pip install python-coveralls && coveralls
+    fi
