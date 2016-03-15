@@ -8,3 +8,4 @@ omit =
     */unittest2/*
     */test/*
     /tmp/*
+    python_tools/reindent.py
