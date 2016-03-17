@@ -10,6 +10,18 @@ class TempDir(object):
     def __exit__(self, exc_type, exc_value, traceback):
         shutil.rmtree(self.__tmpdir, ignore_errors=True)
 
+
+class RunInTempDir(object):
+    def __enter__(self):
+        self.__tmpdir = tempfile.mkdtemp()
+        self.__olddir = os.getcwd()
+        os.chdir(self.__tmpdir)
+        return self.__tmpdir
+    def __exit__(self, exc_type, exc_value, traceback):
+        os.chdir(self.__olddir)
+        shutil.rmtree(self.__tmpdir, ignore_errors=True)
+
+
 def write_file(fname, content):
     with open(fname, "w") as fh:
         fh.write(content)
