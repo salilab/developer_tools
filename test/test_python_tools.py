@@ -95,7 +95,7 @@ class Tests(unittest.TestCase):
             for fname in ['a.1', 'b.1', 'c.2', 'd.2', 'e.3', 'f.3']:
                 utils.write_file(os.path.join(tmpdir, fname), 'foo')
             g = python_tools.get_glob([os.path.join(tmpdir, x)
-                                       for x in '*.3', '*.2'])
+                                       for x in ['*.3', '*.2']])
             self.assertEqual(g, [os.path.join(tmpdir, x)
                                  for x in ['e.3', 'f.3', 'c.2', 'd.2']])
 
