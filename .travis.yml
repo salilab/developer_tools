@@ -3,10 +3,7 @@ python:
   - "2.6"
   - "2.7"
   - "3.5"
-install: pip install python-coveralls
-script: nosetests --with-coverage --cover-package=. --cover-erase
+install: pip install coverage
+script: nosetests --with-coverage
 after_success:
-  - |
-    if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      coveralls
-    fi
+  - bash <(curl -s https://codecov.io/bash)
