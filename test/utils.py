@@ -14,10 +14,18 @@ def TempDir():
 def RunInTempDir():
     _tmpdir = tempfile.mkdtemp()
     _olddir = os.getcwd()
-    os.chdir(__tmpdir)
+    os.chdir(_tmpdir)
     yield _tmpdir
     os.chdir(_olddir)
     shutil.rmtree(_tmpdir, ignore_errors=True)
+
+@contextlib.contextmanager
+def mocked_function(module, funcname, replacement):
+    """Temporarily replace module.funcname with replacement."""
+    oldfunc = getattr(module, funcname)
+    setattr(module, funcname, replacement)
+    yield
+    setattr(module, funcname, oldfunc)
 
 def write_file(fname, content):
     with open(fname, "w") as fh:
