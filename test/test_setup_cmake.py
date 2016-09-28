@@ -49,7 +49,8 @@ class Tests(unittest.TestCase):
 
     def test_setup_cmake(self):
         """Test setup_cmake.py"""
-        subdirs = ['src', '.foo', 'gitflow', os.path.join('src', 'internal')]
+        subdirs = ['src', '.foo', 'gitflow', os.path.join('src', 'internal'),
+                   'bar', os.path.join('bar', 'test')]
         with utils.TempDir() as tmpdir:
             for s in subdirs:
                 os.mkdir(os.path.join(tmpdir, s))
@@ -63,6 +64,12 @@ class Tests(unittest.TestCase):
             f = utils.read_file(fname)
             self.assertEqual(f.split('\n')[0],
                              'set(pyfiles "foo.py;internal/foo.py")')
+            os.unlink(fname)
+
+            fname = os.path.join(tmpdir, 'bar', 'test', 'Files.cmake')
+            f = utils.read_file(fname)
+            self.assertEqual(f.split('\n')[0],
+                             'set(pyfiles "foo.py")')
             os.unlink(fname)
             # Assert that no other files were created (rmdirs would fail)
             for s in subdirs[::-1]:
