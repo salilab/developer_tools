@@ -112,5 +112,66 @@ class Tests(unittest.TestCase):
             python_tools.rewrite(fname, 'foo', verbose=True)
             self.assertEqual(utils.read_file(fname), 'foo')
 
+    def test_rmdir(self):
+        """Test rmdir()"""
+        with utils.TempDir() as tmpdir:
+            subdir = os.path.join(tmpdir, 'subdir')
+            os.mkdir(subdir)
+            self.assertTrue(os.path.exists(subdir))
+            python_tools.rmdir(subdir)
+            self.assertFalse(os.path.exists(subdir))
+            # Not an error to rmdir a non-existent location
+            python_tools.rmdir('/not/exist')
+
+    def test_link_no_source(self):
+        """Test link() with nonexistent source"""
+        for verbose in (True, False):
+            # no-op if source does not exist
+            python_tools.link('/not/exist', '/other/not/exist', verbose=verbose)
+
+    def test_link_already_linked(self):
+        """Test link() with target already linked to source"""
+        with utils.TempDir() as tmpdir:
+            s = os.path.join(tmpdir, 'source')
+            t = os.path.join(tmpdir, 'target')
+            utils.write_file(s, 'foo')
+            os.symlink(s, t)
+            # no-op
+            python_tools.link(s, t)
+
+    def test_link_already_linked_other(self):
+        """Test link() with target already linked to other file"""
+        with utils.TempDir() as tmpdir:
+            s = os.path.join(tmpdir, 'source')
+            o = os.path.join(tmpdir, 'other')
+            t = os.path.join(tmpdir, 'target')
+            utils.write_file(s, 'foo')
+            utils.write_file(o, 'foo')
+            os.symlink(o, t)
+            self.assertEqual(os.readlink(t), o)
+            python_tools.link(s, t)
+            self.assertEqual(os.readlink(t), s)
+
+    def test_link_dir_exists(self):
+        """Test link() with target an existing directory"""
+        with utils.TempDir() as tmpdir:
+            s = os.path.join(tmpdir, 'source')
+            t = os.path.join(tmpdir, 'target')
+            utils.write_file(s, 'foo')
+            os.mkdir(t)
+            utils.write_file(os.path.join(t, 'foo'), 'foo')
+            python_tools.link(s, t)
+            self.assertEqual(os.readlink(t), s)
+
+    def test_link_file_exists(self):
+        """Test link() with target an existing file"""
+        with utils.TempDir() as tmpdir:
+            s = os.path.join(tmpdir, 'source')
+            t = os.path.join(tmpdir, 'target')
+            utils.write_file(s, 'foo')
+            utils.write_file(t, 'foo')
+            python_tools.link(s, t, verbose=True)
+            self.assertEqual(os.readlink(t), s)
+
 if __name__ == '__main__':
     unittest.main()
