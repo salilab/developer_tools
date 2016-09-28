@@ -65,6 +65,7 @@ class Tests(unittest.TestCase):
             fname, pytest, ok_link, bad_link = [os.path.join(path, x)
                          for x in ['orig', 'foo.pytests', 'ok_lnk', 'bad_lnk']]
             utils.write_file(fname, 'foo')
+            utils.write_file(pytest, 'foo')
             os.symlink(fname, ok_link)
             os.symlink('/not/exist', bad_link)
             python_tools.mkdir(path, clean=True)
