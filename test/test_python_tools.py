@@ -100,5 +100,17 @@ class Tests(unittest.TestCase):
             self.assertEqual(g, [os.path.join(tmpdir, x)
                                  for x in ['e.3', 'f.3', 'c.2', 'd.2']])
 
+    def test_rewrite_exists(self):
+        """Test rewrite() with an existing file"""
+        with utils.TempDir() as tmpdir:
+            fname = os.path.join(tmpdir, 'fname')
+            utils.write_file(fname, 'foo')
+            python_tools.rewrite(fname, 'foo')
+            self.assertEqual(utils.read_file(fname), 'foo')
+            python_tools.rewrite(fname, 'bar')
+            self.assertEqual(utils.read_file(fname), 'bar')
+            python_tools.rewrite(fname, 'foo', verbose=True)
+            self.assertEqual(utils.read_file(fname), 'foo')
+
 if __name__ == '__main__':
     unittest.main()
