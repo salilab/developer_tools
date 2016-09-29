@@ -266,7 +266,7 @@ def get_project_info(path):
     if os.path.exists(cp):
         return eval(open(cp, "r").read())
     else:
-        if path == "":
+        if path in ("", "/"):
             raise ValueError("no .imp_info.py found")
         return get_project_info(os.path.split(path)[0])
 

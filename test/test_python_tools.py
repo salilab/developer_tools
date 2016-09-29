@@ -173,5 +173,61 @@ class Tests(unittest.TestCase):
             python_tools.link(s, t, verbose=True)
             self.assertEqual(os.readlink(t), s)
 
+    def test_get_project_info(self):
+        """Test get_project_info()"""
+        with utils.TempDir() as tmpdir:
+            subdir = os.path.join(tmpdir, 'subdir')
+            os.mkdir(subdir)
+            fname = os.path.join(tmpdir, '.imp_info.py')
+            utils.write_file(fname, '{\n"name": "foo"\n}\n')
+            for d in subdir, tmpdir:
+                self.assertEqual(python_tools.get_project_info(d),
+                                 {'name':'foo'})
+            self.assertRaises(ValueError, python_tools.get_project_info,
+                              '/not/exist')
+
+    def test_get_modules(self):
+        """Test get_modules()"""
+        with utils.TempDir() as tmpdir:
+            subdir = os.path.join(tmpdir, 'modules')
+            os.mkdir(subdir)
+            mods = [os.path.join(subdir, x) for x in ['a', 'b', 'c']]
+            for m in mods:
+                os.mkdir(m)
+            utils.write_file(os.path.join(mods[0], 'dependencies.py'), 'f')
+            self.assertEqual(python_tools.get_modules(tmpdir),
+                             [('a', mods[0])])
+
+    def test_split(self):
+        """Test split()"""
+        self.assertEqual(python_tools.split("foo:bar:baz"),
+                         ["foo", "bar", "baz"])
+        self.assertEqual(python_tools.split("foo::baz"),
+                         ["foo", "baz"])
+        self.assertEqual(python_tools.split("foo\:bar:b@z"),
+                         ["foo:bar", "b:z"])
+
+    def test_toposort2(self):
+        """Test toposort2()"""
+        self.assertEqual(python_tools.toposort2(
+                                 {"a":["b","c"], "b":["c"], "c":[]}),
+                         ['c', 'b', 'a'])
+
+    def test_get_sorted_order(self):
+        """Test get_sorted_order()"""
+        with utils.TempDir() as tmpdir:
+            subdir = os.path.join(tmpdir, 'data', 'build_info')
+            os.makedirs(subdir)
+            utils.write_file(os.path.join(subdir, 'sorted_modules'),
+                             'foo\nbar\nbaz\n')
+            python_tools.order_cache = None
+            self.assertEqual(python_tools.get_sorted_order(tmpdir),
+                             ['foo', 'bar', 'baz'])
+            # Get value from cache second time around
+            self.assertEqual(python_tools.get_sorted_order(tmpdir),
+                             ['foo', 'bar', 'baz'])
+            # Clear cache so as not to interfere with other tests
+            python_tools.order_cache = None
+
 if __name__ == '__main__':
     unittest.main()
