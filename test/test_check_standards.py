@@ -3,8 +3,10 @@ import os
 import sys
 import re
 import utils
+import subprocess
 
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+check_py = os.path.join(TOPDIR, "check_standards.py")
 sys.path.insert(0, TOPDIR)
 try:
     import check_standards
@@ -49,6 +51,64 @@ class Tests(unittest.TestCase):
                 utils.write_file(f, "")
             fs = sorted(check_standards.get_all_files())
             self.assertEqual(fs, ['./bar', './foo', './ok/foo'])
+
+    def test_complete(self):
+        """Test simple complete run of check_standards script"""
+        with utils.TempDir() as tmpdir:
+            imp_info = os.path.join(tmpdir, ".imp_info.py")
+            utils.write_file(imp_info, '{\n  "name": "IMP.test"\n}\n')
+            fname = os.path.join(tmpdir, "test.py")
+            utils.write_file(fname, "# test file\n")
+            p = subprocess.Popen([check_py], cwd=tmpdir)
+            stdout, stderr = p.communicate()
+            self.assertEqual(p.returncode, 0)
+
+    def test_check_python_file_bad_indentation(self):
+        """Test check_python_file() with bad indentation"""
+        with utils.TempDir() as tmpdir:
+            fname = os.path.join(tmpdir, "test.py")
+            utils.write_file(fname, "def foo():\n  pass\n")
+            errors = []
+            check_standards.check_python_file(fname, errors)
+            self.assertEqual(len(errors), 1)
+            self.assertTrue("please run through" in errors[0])
+
+    def test_check_python_file_temp_test(self):
+        """Test check_python_file() with temp test marker"""
+        with utils.TempDir() as tmpdir:
+            fname = os.path.join(tmpdir, "test.py")
+            utils.write_file(fname, "class MyTest:\n"
+                             "    def temp_hide_test_bar():\n        pass\n")
+            errors = []
+            check_standards.check_python_file(fname, errors)
+            self.assertEqual(len(errors), 1)
+            self.assertTrue(":2: Test case has the temp_hide_ prefix"
+                            in errors[0])
+
+    def test_check_python_file_incomp_merge(self):
+        """Test check_python_file() with incomplete merge"""
+        with utils.TempDir() as tmpdir:
+            fname = os.path.join(tmpdir, "test.py")
+            utils.write_file(fname, ">>>>>>> \n")
+            errors = []
+            check_standards.check_python_file(fname, errors)
+            self.assertEqual(len(errors), 2)
+            self.assertTrue("please run through" in errors[0])
+            self.assertTrue(":1: error: Incomplete merge found."
+                            in errors[1])
+
+    def test_check_python_file_duplicate_tests(self):
+        """Test check_python_file() with duplicate tests"""
+        with utils.TempDir() as tmpdir:
+            fname = os.path.join(tmpdir, "test.py")
+            utils.write_file(fname, "class Tests:\n"
+                                    "    def test_xyz():\n        pass\n"
+                                    "    def test_xyz():\n        pass\n")
+            errors = []
+            check_standards.check_python_file(fname, errors)
+            self.assertEqual(len(errors), 1)
+            self.assertTrue(":4: Test case has multiple tests with "
+                            "the same name test_xyz" in errors[0])
 
 if __name__ == '__main__':
     unittest.main()
