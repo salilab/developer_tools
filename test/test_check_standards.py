@@ -110,5 +110,81 @@ class Tests(unittest.TestCase):
             self.assertTrue(":4: Test case has multiple tests with "
                             "the same name test_xyz" in errors[0])
 
+    def test_check_c_file_incomp_merge(self):
+        """Test check_c_file() with incomplete merge"""
+        with utils.TempDir() as tmpdir:
+            imp_info = os.path.join(tmpdir, ".imp_info.py")
+            utils.write_file(imp_info, '{\n  "name": "IMP.test"\n}\n')
+            fname = os.path.join(tmpdir, "test.cpp")
+            utils.write_file(fname, ">>>>>>> \n")
+            errors = []
+            check_standards.check_c_file(fname, errors)
+            self.assertEqual(len(errors), 1)
+            self.assertTrue(":1: error: Incomplete merge found."
+                            in errors[0])
+
+    def test_check_c_file_bad_define(self):
+        """Test check_c_file() with bad #defines"""
+        for ext in ('.cpp', '.h'):
+            with utils.TempDir() as tmpdir:
+                imp_info = os.path.join(tmpdir, ".imp_info.py")
+                utils.write_file(imp_info, '{\n  "name": "IMP.test"\n}\n')
+                fname = os.path.join(tmpdir, "test" + ext)
+                utils.write_file(fname, "#define FOO BAR\n#define IMP_FOO BAR\n"
+                                        "#undef FOO\n"
+                                        "#define BAZ BAR\n"
+                                        "#define IMPTEST_FOO BAR\n"
+                                        "#define EIGEN_YES_I_KNOW_SPARSE_"
+                                        "MODULE_IS_NOT_STABLE_YET BAR\n")
+                errors = []
+                check_standards.check_c_file(fname, errors)
+                if ext == '.h':
+                    self.assertEqual(len(errors), 1)
+                    self.assertTrue(":4: error: Preprocessor symbols must "
+                                    "start with IMP_ or IMPTEST" in errors[0])
+                else:
+                    self.assertEqual(len(errors), 0)
+
+    def test_check_c_file_leading_blanks(self):
+        """Test check_c_file() with leading blank lines"""
+        with utils.TempDir() as tmpdir:
+            imp_info = os.path.join(tmpdir, ".imp_info.py")
+            utils.write_file(imp_info, '{\n  "name": "IMP.test"\n}\n')
+            fname = os.path.join(tmpdir, "test.cpp")
+            utils.write_file(fname, "\nint x;\n")
+            errors = []
+            check_standards.check_c_file(fname, errors)
+            self.assertEqual(len(errors), 1)
+            self.assertTrue(":1: File has leading blank line(s)" in errors[0])
+
+    def test_check_c_file_missing_file(self):
+        """Test check_c_file() with missing \\file marker"""
+        for subdir in ('include', 'internal'):
+            with utils.TempDir() as tmpdir:
+                imp_info = os.path.join(tmpdir, ".imp_info.py")
+                utils.write_file(imp_info, '{\n  "name": "IMP.test"\n}\n')
+                os.mkdir(os.path.join(tmpdir, subdir))
+                fname = os.path.join(tmpdir, subdir, "test.h")
+                utils.write_file(fname, "int x;\n")
+                errors = []
+                check_standards.check_c_file(fname, errors)
+                if subdir == 'include':
+                    self.assertEqual(len(errors), 1)
+                    self.assertTrue(":2: Exported header must have a "
+                                    "line \\file IMP/test/test.h" in errors[0])
+                else:
+                    self.assertEqual(len(errors), 0)
+
+    def test_check_c_file_ok(self):
+        """Test check_c_file() with ok file"""
+        with utils.TempDir() as tmpdir:
+            imp_info = os.path.join(tmpdir, ".imp_info.py")
+            utils.write_file(imp_info, '{\n  "name": "IMP.test"\n}\n')
+            fname = os.path.join(tmpdir, "test.cpp")
+            utils.write_file(fname, "int x;\n")
+            errors = []
+            check_standards.check_c_file(fname, errors)
+            self.assertEqual(len(errors), 0)
+
 if __name__ == '__main__':
     unittest.main()
