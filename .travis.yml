@@ -6,6 +6,6 @@ python:
   - "3.5"
 cache: pip
 install: pip install coverage
-script: nosetests --with-coverage
+script: nosetests --with-coverage --cover-branches
 after_success:
   - bash <(curl -s https://codecov.io/bash)
