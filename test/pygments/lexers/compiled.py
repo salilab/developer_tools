@@ -1,0 +1,2 @@
+class CppLexer(object):
+    pass
