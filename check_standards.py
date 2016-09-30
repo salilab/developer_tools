@@ -39,7 +39,8 @@ def check_c_file(filename, errors):
             filepath[filepath.find("include") + len("include"):]
     cppprefix = info["name"].split('.')[0] + '_'
     altcppprefix = info["name"].replace(".", "").upper()
-    fh = file(filename, "r").read().split("\n")
+    with open(filename, "r") as f:
+        fh = f.read().split("\n")
     srch = re.compile('\s+$')
     url = re.compile('https?://')
     configh = False
