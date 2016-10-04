@@ -141,5 +141,88 @@ class Tests(unittest.TestCase):
                         'of "/* IMPKERNEL_TEST_H */".' in errors[0])
         self.assertMissingGuard(errors[1])
 
+    def test_check_header_start_end_bad_guard_prefix(self):
+        """Test check_header_start_end with bad header guard prefix"""
+        bad_tokens = ok_header_tokens[:]
+        bad_tokens[4] = (token.Comment.Preproc, "ifndef bad_FOO_H")
+        errors = self.check_header_start_end(bad_tokens)
+        self.assertEqual(len(errors), 5)
+        self.assertTrue(':1: Header guard does not start with "IMPKERNEL".'
+                        in errors[0])
+        self.assertMissingGuard(errors[4])
+
+    def test_check_header_start_end_bad_guard_suffix(self):
+        """Test check_header_start_end with bad header guard suffix"""
+        bad_tokens = ok_header_tokens[:]
+        bad_tokens[4] = (token.Comment.Preproc, "ifndef IMPKERNEL_bad")
+        errors = self.check_header_start_end(bad_tokens)
+        self.assertEqual(len(errors), 4)
+        self.assertTrue(':1: Header guard does not end with "TEST_H".'
+                        in errors[0])
+        self.assertMissingGuard(errors[3])
+
+    def test_check_comment_header_ok(self):
+        """Test check_comment_header with OK comment"""
+        errors = []
+        cpp_format.check_comment_header(ok_header_tokens, "/foo/bar/Test.h",
+                                        errors)
+        self.assertEqual(errors, [])
+
+    def test_check_comment_header_empty(self):
+        """Test check_comment_header with empty file"""
+        errors = []
+        cpp_format.check_comment_header([], "/foo/bar/Test.h", errors)
+        self.assertEqual(errors, ['/foo/bar/Test.h:1: First line should be '
+                                  'a comment with a copyright notice and a '
+                                  'description of the file'])
+
+    def test_check_comment_header_not_comment(self):
+        """Test check_comment_header with something not a comment"""
+        errors = []
+        cpp_format.check_comment_header([(token.Text, "\n")],
+                                        "/foo/bar/Test.h", errors)
+        self.assertEqual(errors, ['/foo/bar/Test.h:1: First line should be '
+                                  'a comment with a copyright notice and a '
+                                  'description of the file'])
+
+    def test_tokenize_file(self):
+        """Test tokenize_file()"""
+        class DummyFile(object):
+            def read(self):
+                return None
+        fh = DummyFile()
+        self.assertEqual(cpp_format.tokenize_file(fh), [("tok1", "val1"),
+                                                        ("tok2", "val2")])
+
+    def test_check_header_file(self):
+        """Test check_header_file()"""
+        def ok_tokenize(fh):
+            return ok_header_tokens
+        with utils.mocked_function(cpp_format, 'tokenize_file', ok_tokenize):
+            errors = []
+            cpp_format.check_header_file((None, "/foo/bar/test.h"),
+                                         "IMP.kernel", errors)
+            self.assertEqual(errors, [])
+
+    def test_check_cpp_file(self):
+        """Test check_cpp_file()"""
+        def ok_tokenize(fh):
+            return ok_header_tokens
+        with utils.mocked_function(cpp_format, 'tokenize_file', ok_tokenize):
+            errors = []
+            cpp_format.check_cpp_file((None, "/foo/bar/test.cpp"),
+                                      "IMP.kernel", errors)
+            self.assertEqual(errors, [])
+
+    def test_check_cpp_file_test(self):
+        """Test check_cpp_file() with a test file"""
+        def empty_tokenize(fh):
+            return []
+        with utils.mocked_function(cpp_format, 'tokenize_file', empty_tokenize):
+            errors = []
+            cpp_format.check_cpp_file((None, "/foo/bar/test_foo.cpp"),
+                                      "IMP.kernel", errors)
+            self.assertEqual(errors, [])
+
 if __name__ == '__main__':
     unittest.main()
