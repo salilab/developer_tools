@@ -207,28 +207,6 @@ class Tests(unittest.TestCase):
         self.assertEqual(python_tools.split("foo\:bar:b@z"),
                          ["foo:bar", "b:z"])
 
-    def test_toposort2(self):
-        """Test toposort2()"""
-        self.assertEqual(python_tools.toposort2(
-                                 {"a":["b","c"], "b":["c"], "c":[]}),
-                         ['c', 'b', 'a'])
-
-    def test_get_sorted_order(self):
-        """Test get_sorted_order()"""
-        with utils.TempDir() as tmpdir:
-            subdir = os.path.join(tmpdir, 'data', 'build_info')
-            os.makedirs(subdir)
-            utils.write_file(os.path.join(subdir, 'sorted_modules'),
-                             'foo\nbar\nbaz\n')
-            python_tools.order_cache = None
-            self.assertEqual(python_tools.get_sorted_order(tmpdir),
-                             ['foo', 'bar', 'baz'])
-            # Get value from cache second time around
-            self.assertEqual(python_tools.get_sorted_order(tmpdir),
-                             ['foo', 'bar', 'baz'])
-            # Clear cache so as not to interfere with other tests
-            python_tools.order_cache = None
-
     def test_link_dir(self):
         """Test link_dir()"""
         with utils.TempDir() as tmpdir:
