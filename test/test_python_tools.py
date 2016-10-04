@@ -229,5 +229,54 @@ class Tests(unittest.TestCase):
             # Clear cache so as not to interfere with other tests
             python_tools.order_cache = None
 
+    def test_link_dir(self):
+        """Test link_dir()"""
+        with utils.TempDir() as tmpdir:
+            source = os.path.join(tmpdir, 'source')
+            os.mkdir(source)
+            utils.write_file(os.path.join(source, 'foo'), 'foo')
+            utils.write_file(os.path.join(source, 'baz'), 'foo')
+            utils.write_file(os.path.join(source, 'CMakeLists.txt'), 'foo')
+            target = os.path.join(tmpdir, 'target')
+            os.mkdir(target)
+            # Add an OK existing symlink
+            os.symlink(os.path.join(source, 'foo'),
+                       os.path.join(target, 'foo'))
+            # Add a bad existing symlink
+            os.symlink(os.path.join(source, 'bar'),
+                       os.path.join(target, 'badln'))
+            # Add a good existing symlink
+            os.symlink(os.path.join(source, 'foo'),
+                       os.path.join(target, 'goodln'))
+            python_tools.link_dir(source, target)
+            self.assertRaises(TypeError, python_tools.link_dir,
+                              source, target, match='foo')
+            # all links should have been removed
+            self.assertEqual(sorted(os.listdir(target)), sorted(['foo', 'baz']))
+
+    def test_link_dir_no_clean(self):
+        """Test link_dir() with clean=False"""
+        with utils.TempDir() as tmpdir:
+            source = os.path.join(tmpdir, 'source')
+            os.mkdir(source)
+            utils.write_file(os.path.join(source, 'foo'), 'foo')
+            utils.write_file(os.path.join(source, 'baz'), 'foo')
+            utils.write_file(os.path.join(source, 'CMakeLists.txt'), 'foo')
+            target = os.path.join(tmpdir, 'target')
+            os.mkdir(target)
+            # Add an OK existing symlink
+            os.symlink(os.path.join(source, 'foo'),
+                       os.path.join(target, 'foo'))
+            # Add a bad existing symlink
+            os.symlink(os.path.join(source, 'bar'),
+                       os.path.join(target, 'badln'))
+            # Add a good existing symlink
+            os.symlink(os.path.join(source, 'foo'),
+                       os.path.join(target, 'goodln'))
+            python_tools.link_dir(source, target, clean=False)
+            # bad link should have been removed, but not the good link
+            self.assertEqual(sorted(os.listdir(target)),
+                             sorted(['foo', 'baz', 'goodln']))
+
 if __name__ == '__main__':
     unittest.main()

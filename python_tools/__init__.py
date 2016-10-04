@@ -134,10 +134,7 @@ def link(source, target, verbose=False):
 def link_dir(source_dir, target_dir, match=["*"], exclude=[],
              clean=True, verbose=False):
     if not isinstance(match, list):
-        adkfjads
-        lkfjd
-        laskjfdl
-        k
+        raise TypeError("match must be a list")
     exclude = exclude + ["SConscript", "CMakeLists.txt", ".svn"]
     # print "linking", source_dir, target_dir
     mkdir(target_dir, clean=False)
