@@ -1,6 +1,7 @@
 from __future__ import print_function
 import glob
 import os
+import ast
 import os.path
 import copy
 import shutil
@@ -180,10 +181,11 @@ def split(string, sep=":"):
 def get_project_info(path):
     cp = os.path.join(path, ".imp_info.py")
     if os.path.exists(cp):
-        return eval(open(cp, "r").read())
+        with open(cp) as fh:
+            return ast.literal_eval(fh.read())
+    elif path in ("", "/"):
+        raise ValueError("no .imp_info.py found")
     else:
-        if path in ("", "/"):
-            raise ValueError("no .imp_info.py found")
         return get_project_info(os.path.split(path)[0])
 
 _subprocesses = []
