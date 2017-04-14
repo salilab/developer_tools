@@ -175,13 +175,25 @@ class Tests(unittest.TestCase):
                 else:
                     self.assertEqual(len(errors), 0)
 
-    def test_check_c_file_ok(self):
-        """Test check_c_file() with ok file"""
+    def test_check_c_file_cpp_ok(self):
+        """Test check_c_file() with ok cpp file"""
         with utils.TempDir() as tmpdir:
             imp_info = os.path.join(tmpdir, ".imp_info.py")
             utils.write_file(imp_info, '{\n  "name": "IMP.test"\n}\n')
             fname = os.path.join(tmpdir, "test.cpp")
             utils.write_file(fname, "int x;\n")
+            errors = []
+            check_standards.check_c_file(fname, errors)
+            self.assertEqual(len(errors), 0)
+
+    def test_check_c_file_header_ok(self):
+        """Test check_c_file() with ok header file"""
+        with utils.TempDir() as tmpdir:
+            os.makedirs(os.path.join(tmpdir, 'IMP', 'test', 'include'))
+            imp_info = os.path.join(tmpdir, ".imp_info.py")
+            utils.write_file(imp_info, '{\n  "name": "IMP.test"\n}\n')
+            fname = os.path.join(tmpdir, "IMP", "test", "include", "foo.h")
+            utils.write_file(fname, "\\file IMP/test/include/foo.h'")
             errors = []
             check_standards.check_c_file(fname, errors)
             self.assertEqual(len(errors), 0)
