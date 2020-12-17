@@ -18,10 +18,12 @@ if sys.version_info[0] >= 3:
 else:
     open_utf8 = open
 
+
 def _add_includes(headers, output):
     for g in headers:
         name = os.path.split(g)[1]
         output.append("#include <%s/" % sys.argv[2] + name + ">")
+
 
 includepath = sys.argv[1][sys.argv[1].find("include") + len("include") + 1:]
 
