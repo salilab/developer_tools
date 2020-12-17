@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/salilab/developer_tools.svg?branch=master)](https://travis-ci.org/salilab/developer_tools)
+[![Build Status](https://github.com/salilab/developer_tools/workflows/build/badge.svg?branch=master)](https://github.com/salilab/developer_tools/actions?query=workflow%3Abuild)
 [![codecov](https://codecov.io/gh/salilab/developer_tools/branch/master/graph/badge.svg)](https://codecov.io/gh/salilab/developer_tools)
 [![Code Climate](https://codeclimate.com/github/salilab/developer_tools/badges/gpa.svg)](https://codeclimate.com/github/salilab/developer_tools)
 
