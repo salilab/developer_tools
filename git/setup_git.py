@@ -86,4 +86,4 @@ if "autosetuprebase = always" not in config_contents:
     os.system(git_config + " branch.autosetuprebase always")
 # hard to check for
 os.system(git_config + " branch.develop.rebase true")
-os.system(git_config + " branch.master.rebase true")
+os.system(git_config + " branch.main.rebase true")
