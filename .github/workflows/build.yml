@@ -26,3 +26,5 @@ jobs:
         py.test --cov=. --cov-branch --cov-report=xml -v .
         flake8 --ignore=E402,W503 --exclude python_tools/reindent.py
     - uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
