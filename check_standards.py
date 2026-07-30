@@ -14,7 +14,7 @@ try:
 except ImportError:
     cpp_format = None
     print("Cannot conduct additional C++ format checks without the Python ")
-    print("Pygments (http://pygments.org/) library: please install.")
+    print("Pygments (https://pygments.org/) library: please install.")
     print()
 
 from argparse import ArgumentParser
