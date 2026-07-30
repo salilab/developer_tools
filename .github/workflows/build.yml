@@ -22,7 +22,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install pytest flake8 pytest-cov
+        pip install 'pytest<9' flake8 pytest-cov
     - name: Test
       run: |
         py.test --cov=. --cov-branch --cov-report=xml -v .
