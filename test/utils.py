@@ -4,6 +4,13 @@ import os
 import sys
 import contextlib
 
+# Force reimport of pygments from test mock directory if necessary
+def _unimport_pygments():
+    pygs = [m for m in sys.modules if m.startswith('pygments')]
+    for p in pygs:
+        del sys.modules[p]
+_unimport_pygments()
+
 
 @contextlib.contextmanager
 def TempDir():
