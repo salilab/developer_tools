@@ -12,7 +12,7 @@ from queue import Queue
 from threading import Thread
 from shutil import which
 
-sys.path.append(os.path.split(sys.argv[0]))
+sys.path.append(os.path.split(sys.argv[0])[0])
 import python_tools
 from python_tools.reindent import Reindenter
 
