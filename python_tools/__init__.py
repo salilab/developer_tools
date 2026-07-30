@@ -192,7 +192,6 @@ _subprocesses = []
 
 
 def run_subprocess(command, **kwargs):
-    global _subprocesses
     # if not kwargs.has_key("stdout"):
     #    kwargs["stdout"] = subprocess.PIPE
     # if not kwargs.has_key("stderr"):
@@ -213,7 +212,6 @@ def run_subprocess(command, **kwargs):
 def _sigHandler(signum, frame):
     print("starting handler")
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
-    global _subprocesses
     for p in _subprocesses:
         print("killing", p)
         try:
